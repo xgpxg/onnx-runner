@@ -1,6 +1,6 @@
 ## onnx-runner
 
-<img src="https://img.shields.io/badge/ONNX RUNNER-0.1.0-darkgreen?" /> <img src="https://img.shields.io/badge/ORT-2.0.0%20RC.8-darkgreen?link=https%3A%2F%2Fgithub.com%2Fpykeio%2Fort" /> <img src="https://img.shields.io/badge/ONNXRUNTIME-1.19.2-darkgreen?" /> <img src="https://img.shields.io/badge/OPENCV-4.10.0-darkgreen?" />
+<img src="https://img.shields.io/badge/ONNX RUNNER-0.1.0-darkgreen?"  alt="ONNX RUNNER"/> <img src="https://img.shields.io/badge/ORT-2.0.0%20RC.8-darkgreen?link=https%3A%2F%2Fgithub.com%2Fpykeio%2Fort"  alt="ORT"/> <img src="https://img.shields.io/badge/ONNXRUNTIME-1.19.2-darkgreen?"  alt="ONNXRUNTIME"/> <img src="https://img.shields.io/badge/OPENCV-4.10.0-darkgreen?"  alt="OPENCV"/>
 
 ![build workflow](https://github.com/xgpxg/onnx-runner/actions/workflows/build.yml/badge.svg)
 ![release workflow](https://github.com/xgpxg/onnx-runner/actions/workflows/release.yml/badge.svg)
@@ -20,7 +20,7 @@ future
 ### Windows
 
 - Download latest
-  version: [onnx-runner-0.1.0-windows.tar.gz](https://github.com/xgpxg/onnx-runner/releases/download/v0.1.0/onnx-runner-0.1.0-windows.tar.gz)
+  version: [onnx-runner-0.1.0-windows.tar.gz](https://github.com/xgpxg/onnx-runner/releases/download/v0.1.0/onnx-runner-v0.1.0-windows.tar.gz)
 - Or download from release page: [Releases](https://github.com/xgpxg/onnx-runner/releases)
 
 - Extract `onnx-runner-{version}-windows.tar.gz` to your path. The compressed package already includes the necessary
