@@ -1,0 +1,84 @@
+name: release
+
+on:
+  push:
+    tags: [ "v*.*.*" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  release-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install package (llvm, clang, libclang-dev, libopencv-dev)
+        run: sudo apt-get install llvm clang libclang-dev libopencv-dev
+      - name: Build
+        run: |
+          cargo build --release
+          ls -l target/release
+      - name: Create Compressed Package
+        run: |
+          tar -zcvf onnx-runner-${{ github.ref_name }}-linux.tar.gz -C target/release onnx-runner -h libonnxruntime.so
+          ls -l
+      - name: Release Compressed Package
+        uses: softprops/action-gh-release@v2
+        with:
+          files: onnx-runner-${{ github.ref_name }}-linux.tar.gz
+          generate_release_notes: true
+      - name: Create Deb Package
+        run: |
+          mkdir -p .debpkg/usr/bin
+          mkdir -p .debpkg/usr/lib
+          cp target/release/onnx-runner .debpkg/usr/bin/onnx-runner
+          cp target/release/libonnxruntime.so .debpkg/usr/lib/libonnxruntime.so
+          chmod +x .debpkg/usr/bin/onnx-runner
+      - name: Build Deb Package
+        id: build-deb
+        uses: jiro4989/build-deb-action@v3
+        with:
+          package: onnx-runner
+          package_root: .debpkg
+          maintainer: wxg
+          version: ${{ github.ref_name }}
+          depends: 'libopencv-dev'
+          desc: 'Use ORT to run ONNX model'
+          homepage: 'https://github.com/xgpxg/onnx-runner'
+      - name: Release Deb Package
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{steps.build-deb.outputs.file_name}}
+          generate_release_notes: true
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install package (llvm, opencv)
+        run: |
+          choco install llvm
+          choco install opencv --version 4.10.0
+      - name: Build
+        shell: cmd
+        run: |
+          set OPENCV_INCLUDE_PATHS=C:\tools\opencv\build\include
+          set OPENCV_LINK_LIBS=opencv_world4100
+          set OPENCV_LINK_PATHS=C:\tools\opencv\build\x64\vc16\lib
+          cargo build --release
+          dir target\release
+      - name: Create Compressed Package
+        run: |
+          cp target/release/onnxruntime.dll target/release/onnxruntime.dll.temp
+          rm target/release/onnxruntime.dll
+          cp target/release/onnxruntime.dll.temp target/release/onnxruntime.dll
+          cp C:\tools\opencv\build\bin\opencv_videoio_ffmpeg4100_64.dll target/release/opencv_videoio_ffmpeg4100_64.dll
+          cp C:\tools\opencv\build\x64\vc16\bin\opencv_world4100.dll target/release/opencv_world4100.dll
+          tar -zcvf onnx-runner-${{ github.ref_name }}-windows.tar.gz -C target/release onnx-runner.exe onnxruntime.dll opencv_videoio_ffmpeg4100_64.dll opencv_world4100.dll
+          dir
+      - name: Release Compressed Package
+        uses: softprops/action-gh-release@v2
+        with:
+          files: onnx-runner-${{ github.ref_name }}-windows.tar.gz
+          generate_release_notes: true

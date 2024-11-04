@@ -1,0 +1,38 @@
+name: build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install package (llvm, clang, libclang-dev, libopencv-dev)
+        run: sudo apt-get install llvm clang libclang-dev libopencv-dev
+      - name: Build
+        run: |
+          cargo build --release
+          ls -l target/release
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install package (llvm, opencv)
+        run: choco install llvm opencv
+      - name: Build
+        shell: cmd
+        run: |
+          set OPENCV_INCLUDE_PATHS=C:\tools\opencv\build\include
+          set OPENCV_LINK_LIBS=opencv_world4100
+          set OPENCV_LINK_PATHS=C:\tools\opencv\build\x64\vc16\lib
+          cargo build --release
+          dir target\release
