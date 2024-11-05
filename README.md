@@ -1,6 +1,6 @@
 ## onnx-runner
 
-<img src="https://img.shields.io/badge/ONNX RUNNER-0.1.0-darkgreen?"  alt="ONNX RUNNER"/> <img src="https://img.shields.io/badge/ORT-2.0.0%20RC.8-darkgreen?link=https%3A%2F%2Fgithub.com%2Fpykeio%2Fort"  alt="ORT"/> <img src="https://img.shields.io/badge/ONNXRUNTIME-1.19.2-darkgreen?"  alt="ONNXRUNTIME"/> <img src="https://img.shields.io/badge/OPENCV-4.10.0-darkgreen?"  alt="OPENCV"/>
+<img src="https://img.shields.io/badge/ONNX RUNNER-0.1.1-darkgreen?"  alt="ONNX RUNNER"/> <img src="https://img.shields.io/badge/ORT-2.0.0%20RC.8-darkgreen?link=https%3A%2F%2Fgithub.com%2Fpykeio%2Fort"  alt="ORT"/> <img src="https://img.shields.io/badge/ONNXRUNTIME-1.19.2-darkgreen?"  alt="ONNXRUNTIME"/> <img src="https://img.shields.io/badge/OPENCV-4.10.0-darkgreen?"  alt="OPENCV"/>
 
 ![build workflow](https://github.com/xgpxg/onnx-runner/actions/workflows/build.yml/badge.svg)
 ![release workflow](https://github.com/xgpxg/onnx-runner/actions/workflows/release.yml/badge.svg)
@@ -20,7 +20,7 @@ future
 ### Windows
 
 - Download latest
-  version: [onnx-runner-0.1.0-windows.tar.gz](https://github.com/xgpxg/onnx-runner/releases/download/v0.1.0/onnx-runner-v0.1.0-windows.tar.gz)
+  version: [onnx-runner-0.1.1-windows.tar.gz](https://github.com/xgpxg/onnx-runner/releases/download/v0.1.1/onnx-runner-v0.1.1-windows.tar.gz)
 - Or download from release page: [Releases](https://github.com/xgpxg/onnx-runner/releases)
 
 - Extract `onnx-runner-{version}-windows.tar.gz` to your path. The compressed package already includes the necessary
@@ -38,14 +38,31 @@ future
 
   ```shell
   # Download latest package
-  wget https://github.com/xgpxg/onnx-runner/releases/download/v0.1.0/onnx-runner_0.1.0_amd64.deb
+  wget https://github.com/xgpxg/onnx-runner/releases/download/v0.1.1/onnx-runner_0.1.1_amd64.deb
   
   # Install package
-  sudo apt install ./onnx-runner_0.1.0_amd64.deb
+  sudo apt install ./onnx-runner_0.1.1_amd64.deb
   ```
 
   Note：The OpenCV will be installed by default
 
+
+- Run onnx-runner
+
+  ```shell
+  onnx-runner -m <your_onnx_model> -i <your_input> --show
+  ```
+
+### Other Linux
+
+- Download latest
+  version: [onnx-runner-v0.1.1-linux.tar.gz](https://github.com/xgpxg/onnx-runner/releases/download/v0.1.1/onnx-runner-v0.1.1-linux.tar.gz)
+
+- Extract `onnx-runner-{version}-linux.tar.gz` to your path.
+
+- Copy `libonnxruntime.so` to /usr/lib
+
+- Install `Opencv`
 
 - Run onnx-runner
 
@@ -81,6 +98,17 @@ Options:
   -V, --version                      Print version
 
 ```
+
+Supported input sources:
+
+| Input               | Example                                                                |
+|---------------------|------------------------------------------------------------------------|
+| Local image file    | D:/images/img.png                                                      |
+| Internet image file | https://cdn.pixabay.com/photo/2019/11/05/01/00/couple-4602505_1280.jpg |
+| Local video file    | D:/images/video.mp4                                                    |
+| Internet video file | https://cdn.pixabay.com/video/2024/06/04/215258_large.mp4              |
+| Local camera        | camera://0                                                             |
+| Ip camera(RTSP)     | rtsp://192.168.1.5:554                                                 |
 
 ### Lib
 
