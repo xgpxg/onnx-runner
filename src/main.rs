@@ -40,6 +40,13 @@ struct Args {
         help = "Optional, multiple category names, each category separated directly by commas"
     )]
     names: Option<String>,
+    #[arg(
+        short,
+        long,
+        default_value = "0.5",
+        help = "Optional, confidence threshold for detection results"
+    )]
+    threshold: f32,
 }
 
 //Default object detect names with COCO
@@ -50,6 +57,7 @@ fn main() -> eyre::Result<()> {
 
     let mut config = ModelRunConfig::default();
     config.yolo_version = args.yolo_version;
+    config.threshold = args.threshold;
     if let Some(names) = args.names {
         config.names = names.split(",").map(|v| v.trim().to_string()).collect();
     } else {
