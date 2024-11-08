@@ -41,7 +41,7 @@ future
   wget https://github.com/xgpxg/onnx-runner/releases/download/v0.1.1/onnx-runner_0.1.1_amd64.deb
   
   # Install package
-  sudo apt install ./onnx-runner_0.1.1_amd64.deb
+  sudo apt -f install ./onnx-runner_0.1.1_amd64.deb
   ```
 
   Note：The OpenCV will be installed by default
