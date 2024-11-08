@@ -1,7 +1,11 @@
 [package]
 name = "onnx-runner"
-version = "0.1.0"
+description = "Use ORT to run ONNX model."
+version = "0.1.2"
 edition = "2021"
+authors = ["wxg"]
+license = "Apache-2.0"
+repository = "https://github.com/xgpxg/onnx-runner"
 
 [dependencies]
 eyre = "0.6.12"
