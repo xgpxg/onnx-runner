@@ -844,6 +844,7 @@ dependencies = [
  "ort",
  "reqwest",
  "serde",
+ "serde_json",
  "thiserror",
  "uuid",
 ]

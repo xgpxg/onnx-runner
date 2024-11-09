@@ -6,8 +6,8 @@ use opencv::prelude::VideoCaptureTrait;
 use opencv::videoio;
 use opencv::videoio::VideoCapture;
 use ort::{
-    CUDAExecutionProvider, GraphOptimizationLevel, Session, SessionOutputs,
-    Tensor, TensorRTExecutionProvider,
+    CUDAExecutionProvider, GraphOptimizationLevel, Session, SessionOutputs, Tensor,
+    TensorRTExecutionProvider,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -36,7 +36,7 @@ pub struct ModelRunConfig {
     pub output_param_name: String,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct ModelRunResult<'a> {
     pub bounding_box: BoundingBox,
     pub label: &'a str,
@@ -95,10 +95,10 @@ impl ModelRunner {
     /// `p` Preprocessing input image
     ///
     /// `f` Model run result callback function, contains detect result and after preprocessing image(the return value of function `p`)
-    pub fn run<P, F>(&self, input: &str, p: P, f: F) -> eyre::Result<()>
+    pub fn run<P, F>(&self, input: &str, p: P, mut f: F) -> eyre::Result<()>
     where
         P: Fn(Mat) -> Mat,
-        F: Fn(Vec<ModelRunResult>, Mat),
+        F: FnMut(Vec<ModelRunResult>, Mat),
     {
         let mut capture = get_video_capture(input)?;
         let mut frame = Mat::default();

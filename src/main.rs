@@ -1,9 +1,21 @@
-use crate::runner::runner::{ModelRunConfig, ModelRunResult, ModelRunner};
+use std::fmt::Display;
+use std::fs::OpenOptions;
+use std::io::{Read, Write};
+use std::ops::{Deref, DerefMut};
+use std::process::exit;
+use std::str::FromStr;
+use std::time::Duration;
+
 use clap::Parser;
-use eyre::OptionExt;
+use eyre::{Context, ContextCompat, ErrReport, OptionExt};
 use opencv::core::{Mat, Point, Rect, Scalar};
 use opencv::highgui;
 use opencv::imgproc::HersheyFonts;
+use reqwest::blocking::Client;
+use serde_json::json;
+use thiserror::Error;
+
+use crate::runner::runner::{ModelRunConfig, ModelRunResult, ModelRunner};
 
 mod runner;
 
@@ -47,6 +59,12 @@ struct Args {
         help = "Optional, confidence threshold for detection results"
     )]
     threshold: f32,
+    #[arg(
+        short,
+        long,
+        help = "Optional, send results to the specified location. Send to file: file://your_path/your_file, send yo http(s) api: http://host/path"
+    )]
+    output: Option<String>,
 }
 
 //Default object detect names with COCO
@@ -67,18 +85,25 @@ fn main() -> eyre::Result<()> {
             .collect();
     }
 
-    let runner = ModelRunner::new(args.model.as_str(), config).unwrap();
+    let runner = ModelRunner::new(args.model.as_str(), config)?;
 
     if args.show {
         highgui::named_window("window", highgui::WINDOW_KEEPRATIO)?;
         highgui::resize_window("window", 720, 480)?;
     }
 
+    let mut output = Output::from_str(args.output.unwrap_or_default().as_str())?;
+
     runner.run(args.input.as_str(), ModelRunner::no_pre, |res, mut mat| {
+        println!("Result: {:?}", &res);
+
         if args.show {
             show_result_image(&res, &mut mat);
         }
-        println!("Result: {:?}", &res);
+
+        let _ = send_result(&mut output, &res).map_err(|why| {
+            eprintln!("Send result fail: {}", why.to_string());
+        });
     })?;
     if args.show {
         highgui::wait_key(-1)?;
@@ -113,4 +138,92 @@ fn show_result_image(res: &Vec<ModelRunResult>, mat: &mut Mat) {
     }
     highgui::imshow("window", mat).unwrap();
     highgui::wait_key(1).unwrap();
+}
+
+#[derive(Debug)]
+enum Output {
+    None,
+    FILE(String),
+    HTTP(String, Client),
+    HTTPS(String, Client),
+}
+
+#[derive(Error, Debug)]
+pub enum OutputError {
+    #[error(
+        "Not supported output: {0}. The output must be start with file:// or http:// or https://"
+    )]
+    NotSupportedError(String),
+}
+
+impl FromStr for Output {
+    type Err = ErrReport;
+
+    fn from_str(output: &str) -> eyre::Result<Self, ErrReport> {
+        if output == "" {
+            return Ok(Output::None);
+        }
+        if output.starts_with("file://") {
+            let path = output.clone().replace("file://", "");
+            Ok(Output::FILE(path))
+        } else if output.starts_with("http://") {
+            let client = get_client()?;
+            Ok(Output::HTTP(output.to_string(), client))
+        } else if output.starts_with("https://") {
+            let client = get_client()?;
+            Ok(Output::HTTPS(output.to_string(), client))
+        } else {
+            eprintln!(
+                "Error: {}",
+                OutputError::NotSupportedError(output.to_string())
+            );
+            exit(1);
+        }
+    }
+}
+
+fn get_client() -> eyre::Result<Client> {
+    let client = Client::builder()
+        .pool_max_idle_per_host(10)
+        .connect_timeout(Duration::from_secs(30))
+        .build()?;
+    Ok(client)
+}
+
+fn send_result(output: &mut Output, res: &Vec<ModelRunResult>) -> eyre::Result<()> {
+    match output {
+        Output::None => {
+            //Nothing to do
+        }
+        Output::FILE(file) => {
+            let mut file = OpenOptions::new().append(true).open(file)?;
+            writeln!(file, "{}", json!(res))?;
+        }
+        Output::HTTP(url, client) => {
+            println!("Sending result to: {}", url);
+            client.post(url.as_str()).body("").send()?;
+            let response = client
+                .post(url.as_str())
+                .body(json!(res).to_string())
+                .send()?;
+            println!(
+                "Server response: <{}>\n{}",
+                response.status(),
+                response.text()?
+            );
+        }
+        Output::HTTPS(url, client) => {
+            println!("Sending result to: {}", url);
+            let response = client
+                .post(url.as_str())
+                .body(json!(res).to_string())
+                .send()?;
+            println!(
+                "Server response: <{}>\n{}",
+                response.status(),
+                response.text()?
+            );
+        }
+    }
+    Ok(())
 }

@@ -10,6 +10,13 @@ Use [ORT](https://github.com/pykeio/ort) to run ONNX model.
 Currently, only YOLO models are supported, and other ONNX models may be supported in the
 future
 
+## Features
+
+- Run Yolo's ONNX model for object detect
+- Support multiple image input sources: File, Http(s), Camera, RTSP
+- Support custom models
+- Support sending detection results to files or HTTP api
+
 ## Install
 
 ### Requirements
@@ -93,9 +100,13 @@ Options:
   -m, --model <MODEL>                YOLO onnx model file path, support version: v5, v7, v8, v10, and v11
   -i, --input <INPUT>                Input source, like image file, http image, camera, or rtsp
       --yolo-version <YOLO_VERSION>  The number of YOLO version, like 5, 7 ,8 ,10, or 11. Specifically, for YOLO 10, it needs to be set up [default: 8]
-      --show                         Should the detection results be displayed in the gui window, default is false
+      --show                         Optional, should the detection results be displayed in the gui window, default is false
+  -n, --names <NAMES>                Optional, multiple category names, each category separated directly by commas
+  -t, --threshold <THRESHOLD>        Optional, confidence threshold for detection results [default: 0.5]
+  -o, --output <OUTPUT>              Optional, send results to the specified location. Send to file: file://your_path/your_file, send yo http(s) api: http://host/path
   -h, --help                         Print help
   -V, --version                      Print version
+
 
 ```
 

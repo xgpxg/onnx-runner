@@ -13,6 +13,7 @@ thiserror = { version = "1.0.64", features = [] }
 opencv = "0.93.3"
 reqwest = { version = "0.12.8", features = ["blocking"] }
 serde = { version = "1.0.210", features = ["derive"] }
+serde_json = { version = "1.0.132" }
 ort = { version = "2.0.0-rc.8", features = ["cuda", "tensorrt"] }
 ndarray = "0.16.1"
 uuid = { version = "1.11.0", features = ["v4"] }
