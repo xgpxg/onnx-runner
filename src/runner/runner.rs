@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use ndarray::{s, Axis};
 use opencv::core::{Mat, MatTraitConst, MatTraitConstManual, Size, CV_32F};
 use opencv::prelude::VideoCaptureTrait;
@@ -13,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 pub struct ModelRunner {
+    #[allow(unused)]
     pub id: String,
     pub session: Session,
     pub config: ModelRunConfig,
@@ -120,6 +119,7 @@ impl ModelRunner {
     }
 
     ///Stop runner
+    #[allow(unused)]
     pub fn stop(&mut self) -> eyre::Result<()> {
         self.close_flag = true;
         self.session.end_profiling()?;

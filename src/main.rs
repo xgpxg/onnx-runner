@@ -1,13 +1,11 @@
-use std::fmt::Display;
 use std::fs::OpenOptions;
-use std::io::{Read, Write};
-use std::ops::{Deref, DerefMut};
+use std::io::Write;
 use std::process::exit;
 use std::str::FromStr;
 use std::time::Duration;
 
 use clap::Parser;
-use eyre::{Context, ContextCompat, ErrReport, OptionExt};
+use eyre::ErrReport;
 use opencv::core::{Mat, Point, Rect, Scalar};
 use opencv::highgui;
 use opencv::imgproc::HersheyFonts;
@@ -164,7 +162,7 @@ impl FromStr for Output {
             return Ok(Output::None);
         }
         if output.starts_with("file://") {
-            let path = output.clone().replace("file://", "");
+            let path = output.replace("file://", "");
             Ok(Output::FILE(path))
         } else if output.starts_with("http://") {
             let client = get_client()?;
